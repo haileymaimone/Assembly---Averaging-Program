@@ -1,0 +1,65 @@
+; Program 1 - Average Program - CSC-323: Assembly Language Programming
+; Group 1:  Hailey Maimone - mai5013@calu.edu, Ricky Peddicord - ped8697@calu.edu, Kelli Huff - huf2203@calu.edu
+
+INCLUDE Irvine32.inc
+
+.data
+grade DWORD ?         ; declares grade variable to hold grades entered by user
+sum DWORD ?           ; declares sum variable to hold sum of grades
+counter DWORD ?       ; declares counter variable to keep track of valid grades entered
+promptMsg BYTE "Enter a grade between 0 and 100: ", 0
+badGrade BYTE "Entered grade out of range", 0                  ; string to print when invalid grade is entered
+sumString BYTE "Current accumulated sum:  ", 0                 ; string to print the sum of valid grades entered
+counterString BYTE "Number of grades entered:  ", 0            ; string to print the number of valid grades entered
+divisionString BYTE "The grade average is:  ", 0       ; string to print the average of the valid grades
+remainderString BYTE "The remainder of the grade average is: ", 0	; string to print remainder of average
+
+
+.code
+main PROC
+	beginwhile:
+		mov edx, OFFSET promptMsg
+		call Crlf
+		call WriteString
+		call ReadInt				; reads number from user
+		call Crlf
+		mov grade, eax				; save into grade variable
+		cmp eax, 0					; compare number vs 0
+		jl endwhile					; if number is less than 0, exit loop
+		cmp eax, 100				; compare number vs 100
+		jg endwhile					; if number is greater than 100, exit loop
+		add sum, eax                ; accumulates numbers being read in
+		mov eax, sum                ; moves accumulation to eax register
+		inc counter                 ; increments counter after every grade
+		call Crlf
+		mov edx, OFFSET sumString   ; moves sumString to edx
+		call WriteString            ; prints sumString to screen
+		call WriteInt               ; prints the sum value to screen
+		call Crlf
+		mov eax, counter            ; moves the counter to eax register
+		mov edx, OFFSET counterString  ; moves counterString to edx
+		call WriteString            ; prints counterString to screen
+		call WriteInt               ; prints counter value to screen
+		call Crlf
+		mov eax, sum                ; moves sum to eax register, becomes dividend for average calculation
+		cdq                         ; extends eax into edx
+		mov ebx, counter            ; moves counter to ebx, becomes divisor
+		idiv ebx                    ; divides the two numbers
+		mov ecx, edx
+		mov edx, OFFSET divisionString  ; moves divisionString to edx
+		call WriteString            ; prints divisionString to screen
+		call WriteInt               ; prints average to screen
+		call Crlf
+		mov edx, OFFSET remainderString  ; moves remainderString to edx
+		call WriteString            ; call to print remainderString to screen
+		mov eax, ecx
+		call WriteInt               ; call to print remainder to screen
+		call Crlf
+		jmp beginwhile				; restart loop
+	endwhile:                       ; ends loop
+		call Crlf
+		mov edx, OFFSET badGrade	; move string to register
+		call WriteString			; write string to console
+main ENDP
+
+END main
